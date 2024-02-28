@@ -1,7 +1,12 @@
 from ensamble import AgentEnsamble
 import json
-from prompts import prompts
+from prompts import prompts, MATH_TASK_SYSTEM_PROMPT
 import re
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
 
 class MATH():
     def __init__(self, num_agents, model_type, api_key, temperature=1):
@@ -23,7 +28,7 @@ class MATH():
                     question_data = {
                         "level": level,
                         "category": category,
-                        "state": question_prompt,
+                        "human_prompt": question_prompt,
                         "ground_truth": solution,
                     }
                     qa_list.append(question_data)
@@ -42,3 +47,17 @@ class MATH():
             return match.group(1)
         else:
             return None
+    
+    def prompt_agents(self, questions):
+        for question in questions:
+            system_prompt = SystemMessagePromptTemplate.from_template(MATH_TASK_SYSTEM_PROMPT)
+            human_prompt = HumanMessagePromptTemplate.from_template(question['human_prompt'])
+
+            prompt = ChatPromptTemplate.from_messages([system_prompt, human_prompt])
+
+            prompt = prompt.format(answer='answer')
+            answers = []
+            for agent in self.ensamble.agents:
+                answer = agent.llm(prompt)
+                answers.append(answer)
+            print(answers)

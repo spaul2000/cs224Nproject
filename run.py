@@ -6,6 +6,7 @@ def run_task(dataset, num_agents, api_key='xxx'):
     
 
     data = task.get_question_data('data/math_subset_20.json')
+    task.prompt_agents(data[:1])
 
 if __name__ == "__main__":
     # Create the argument parser
