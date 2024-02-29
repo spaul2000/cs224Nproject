@@ -31,7 +31,9 @@ class MATH():
                         "level": level,
                         "category": category,
                         "human_prompt": question_prompt,
+                        "full_solution": problem["solution"],
                         "ground_truth": solution,
+                       
                     }
                     qa_list.append(question_data)
         return qa_list
@@ -67,21 +69,17 @@ class MATH():
         return agent_answers[largestCount]
 
     
-    def prompt_agents(self, questions):
-        gt_answers = []
-        ensamble_answers = []
-        for question in questions:
-            gt_answers.append(question['ground_truth']) 
-            system_prompt = SystemMessage(content=MATH_TASK_SYSTEM_PROMPT)
-            human_prompt = HumanMessage(content=question['human_prompt'])
+    def prompt_agents(self, question):
+       
+        system_prompt = SystemMessage(content=MATH_TASK_SYSTEM_PROMPT)
+        human_prompt = HumanMessage(content=question['human_prompt'])
 
-            messages = ([system_prompt, human_prompt])
+        messages = ([system_prompt, human_prompt])
 
-            answers = []
-            for agent in self.ensamble.agents:
-                answer = agent.llm(messages).content
-                answers.append(self.math_ans_parser(answer))
-            
-            ensamble_answers.append(answers)
+        answers = []
+        for agent in self.ensamble.agents:
+            answer = agent.llm(messages).content
+            answers.append(self.math_ans_parser(answer))
         
-        return ensamble_answers, gt_answers
+        
+        return answers
