@@ -1,7 +1,12 @@
 from ensamble import AgentEnsamble
 import json
-from prompts import prompts
+from prompts import prompts, TRIVIA_TASK_SYSTEM_PROMPT
 import re
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
 
 class TRIVIA():
     def __init__(self, num_agents, model_type, api_key, temperature=1):
@@ -22,12 +27,14 @@ class TRIVIA():
                 f = open(evidence_path + filename, 'r')
                 content = f.read()
                 evidence.append(content)
+            question_prompt = prompts["triviaQA"]["question"].format('\n\n'.join(evidence), question)
             answer = data['Answer']['Value']
             normalized_answer =  data['Answer']['NormalizedValue']
             aliases = data['Answer']['Aliases']
             normalized_aliases = data['Answer']['NormalizedAliases']
             question_data = {
                 "question": question,
+                "human_prompt": question_prompt,
                 "evidence": evidence,
                 "answer": answer,
                 "normalized_answer": normalized_answer,
@@ -36,4 +43,19 @@ class TRIVIA():
             }
             qa_list.append(question_data)
         return qa_list
+    
 
+    # def trivia_ans_parser(self, answer_text):
+    #     pass
+    def prompt_agents(self, questions):
+        for question in questions:
+            system_prompt = SystemMessagePromptTemplate.from_template(TRIVIA_TASK_SYSTEM_PROMPT)
+            human_prompt = HumanMessagePromptTemplate.from_template(question['human_prompt'])
+
+            prompt = ChatPromptTemplate.from_messages([system_prompt, human_prompt])
+            
+            answers = []
+            for agent in self.ensamble.agents:
+                answer = agent.llm(prompt)
+                answers.append(answer)
+            print(answers)
