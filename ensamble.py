@@ -13,3 +13,4 @@ class AgentEnsamble:
         agents = []
         for _ in range(self.num_agents):
             agents.append(Agent(self.api_key, 'OpenAI', self.model_type, self.temperature))
+        return agents

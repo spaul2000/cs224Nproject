@@ -1,4 +1,6 @@
 from ensamble import AgentEnsamble
+from math_equivalance import is_equiv
+
 import json
 from prompts import prompts, MATH_TASK_SYSTEM_PROMPT
 import re
@@ -7,6 +9,7 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate,
 )
+from langchain_core.messages import HumanMessage, SystemMessage
 
 class MATH():
     def __init__(self, num_agents, model_type, api_key, temperature=1):
@@ -21,8 +24,7 @@ class MATH():
                     
                     solution = problem["solution"]
                     solution = self.math_ans_parser(solution)
-                    p = problem['problem']
-                    print(f"problem: {p}, solution: {solution}\n")
+         
                     
                     question_prompt = prompts["math"]["question"].format(problem["problem"])
                     question_data = {
@@ -48,16 +50,38 @@ class MATH():
         else:
             return None
     
+    def get_majority_voting_answer(self, agent_answers):
+        count = len(agent_answers)
+        sameAsCount = [0 for i in range(count)]
+        for i in range(count):
+            j = i + 1
+            while j < count:
+                if is_equiv(agent_answers[i], agent_answers[j]):
+                    sameAsCount[i] += 1
+                    sameAsCount[j] += 1
+                j += 1
+        largestCount = 0
+        for i in range(count):
+            if sameAsCount[i] > sameAsCount[largestCount]:
+                largestCount = i
+        return agent_answers[largestCount]
+
+    
     def prompt_agents(self, questions):
+        gt_answers = []
+        ensamble_answers = []
         for question in questions:
-            system_prompt = SystemMessagePromptTemplate.from_template(MATH_TASK_SYSTEM_PROMPT)
-            human_prompt = HumanMessagePromptTemplate.from_template(question['human_prompt'])
+            gt_answers.append(question['ground_truth']) 
+            system_prompt = SystemMessage(content=MATH_TASK_SYSTEM_PROMPT)
+            human_prompt = HumanMessage(content=question['human_prompt'])
 
-            prompt = ChatPromptTemplate.from_messages([system_prompt, human_prompt])
+            messages = ([system_prompt, human_prompt])
 
-            prompt = prompt.format(answer='answer')
             answers = []
             for agent in self.ensamble.agents:
-                answer = agent.llm(prompt)
-                answers.append(answer)
-            print(answers)
+                answer = agent.llm(messages).content
+                answers.append(self.math_ans_parser(answer))
+            
+            ensamble_answers.append(answers)
+        
+        return ensamble_answers, gt_answers
