@@ -1,5 +1,7 @@
 MATH_TASK_SYSTEM_PROMPT = "Imagine you are an expert skilled in solving mathematical problems and are confident in your answer and often persuades other agents to believe in you. Please keep this in mind."
 
+TRIVIA_TASK_SYSTEM_PROMPT = "Imagine you are an expert skilled in reading comprehension and are confident in your answer and often persuades other agents to believe in you. Please keep this in mind."
+
 prompts = {
     
     "math":{
@@ -7,7 +9,7 @@ prompts = {
     },
     "triviaQA": { 
         "question": "Using the evidence provided below: \n{} \nPlease answer the following question as accurately as possible. \
-            Please only include the answer in your response. {}"
+            Please only include the answer itself in your response, nothing else, not in a complete sentence. {}"
     }
     
 }
