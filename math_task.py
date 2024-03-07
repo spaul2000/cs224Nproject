@@ -1,5 +1,6 @@
 from ensamble import AgentEnsamble
 from math_equivalance import is_equiv
+import utils
 
 import json
 from prompts import prompts, MATH_TASK_SYSTEM_PROMPT
@@ -77,9 +78,13 @@ class MATH():
         messages = ([system_prompt, human_prompt])
 
         answers = []
+        # breakpoint()
         for agent in self.ensamble.agents:
             answer = agent.llm(messages).content
             answers.append(self.math_ans_parser(answer))
         
         
         return answers
+
+    def evaluation(self, df):
+        return df.apply(utils.is_final_answer_correct, axis=1).mean()
