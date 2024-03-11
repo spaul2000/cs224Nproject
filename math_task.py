@@ -13,8 +13,9 @@ from langchain.prompts.chat import (
 from langchain_core.messages import HumanMessage, SystemMessage
 
 class MATH():
-    def __init__(self, num_agents, model_type, api_key, temperature=1):
-        self.ensamble = AgentEnsamble(num_agents, model_type, api_key, temperature)
+    def __init__(self, num_agents, model_type, temperature=1):
+        self.model_type = model_type
+        self.ensamble = AgentEnsamble(num_agents, model_type, temperature)
     
     def get_question_data(self, dataset_path):
         qa_list = []
@@ -76,12 +77,18 @@ class MATH():
         human_prompt = HumanMessage(content=question['human_prompt'])
 
         messages = ([system_prompt, human_prompt])
+        if self.model_type == 'google':
+            messages = [human_prompt]
 
         answers = []
         # breakpoint()
         for agent in self.ensamble.agents:
-            answer = agent.llm(messages).content
-            answers.append(self.math_ans_parser(answer))
+            try:
+                answer = agent.llm(messages).content
+                answer = self.math_ans_parser(answer)
+            except:
+                answer = -1
+            answers.append(answer)
         
         
         return answers
