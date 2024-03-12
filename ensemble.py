@@ -1,16 +1,15 @@
 from agent import Agent
 
 class AgentEnsemble:
-    def __init__(self, num_agents, model_type, api_key, temperature=1):
-        self.model_type = model_type
+    def __init__(self, num_agents, model_provider, temperature=1):
         self.num_agents = num_agents
         self.temperature = temperature
-        self.api_key = api_key
+        self.model_provider = model_provider
         self.agents = self.spawn_agents()
         
     
     def spawn_agents(self):
         agents = []
         for _ in range(self.num_agents):
-            agents.append(Agent(self.api_key, 'Llama', self.model_type, self.temperature))
+            agents.append(Agent(self.model_provider, self.temperature))
         return agents

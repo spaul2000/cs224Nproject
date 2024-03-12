@@ -1,4 +1,4 @@
-from ensemble2 import AgentEnsemble
+from ensemble import AgentEnsemble
 import json
 import csv
 import re
@@ -13,8 +13,8 @@ from langchain.prompts.chat import (
 import tiktoken
 
 class TRIVIA():
-    def __init__(self, num_agents, model_type, api_key, temperature=1):
-        self.ensemble = AgentEnsemble(num_agents, api_key, temperature)
+    def __init__(self, num_agents, model_type, temperature=1):
+        self.ensemble = AgentEnsemble(num_agents, model_type, temperature)
 
     def get_question_data(self, dataset_path):
         encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")

@@ -15,7 +15,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 class MATH():
     def __init__(self, num_agents, model_type, temperature=1):
         self.model_type = model_type
-        self.ensamble = AgentEnsamble(num_agents, model_type, temperature)
+        self.ensemble = AgentEnsemble(num_agents, model_type, temperature)
     
     def get_question_data(self, dataset_path):
         qa_list = []
@@ -27,7 +27,7 @@ class MATH():
                     solution = problem["solution"]
                     solution = self.math_ans_parser(solution)
                     p = problem['problem']
-                    print(f"problem: {p}, solution: {solution}\n")
+                  
                     
                     question_prompt = prompts["math"]["question"].format(problem["problem"])
                     question_data = {
@@ -83,7 +83,7 @@ class MATH():
 
         answers = []
         # breakpoint()
-        for agent in self.ensamble.agents:
+        for agent in self.ensemble.agents:
             try:
                 answer = agent.llm(messages).content
                 answer = self.math_ans_parser(answer)
