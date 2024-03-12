@@ -8,9 +8,15 @@ os.environ['LLAMA_API_TOKEN'] = 'LL-S38sNFyBFJMraCD4N5llAbj6hCBLutze0DD24KNGCSWk
 os.environ['GOOGLE_API_KEY'] = 'AIzaSyAy9PG3kVjWnBtgbDROGtRqYUh1zxm7-RU'
 os.environ['OPENAI_API_KEY'] = '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'
 
-def run_task(dataset, num_agents):
+ENSEMBLE = {
+    'OpenAI': 0,
+    'Llama': 0,
+    'google': 1
+} #options: OpenAI, Llama, google
+
+def run_task(dataset, ensemble_dict=ENSEMBLE):
     if dataset == 'MATH':
-        task = MATH(num_agents=num_agents, model_type='google', temperature=1)
+        task = MATH(ensemble_dict=ensemble_dict, temperature=1)
     
         data = task.get_question_data('data/math_subset_20.json')
         total_record = []
@@ -19,7 +25,7 @@ def run_task(dataset, num_agents):
             print(i)
             ensemble_answers= task.prompt_agents(d)
             final_answer = task.get_majority_voting_answer(ensemble_answers)
-            result_dict = {"ensamble_answers": ensemble_answers, 'final_answer':final_answer}
+            result_dict = {"ensemble_answers": ensemble_answers, 'final_answer':final_answer}
             one_record = {}
             for k, v in d.items():
                 one_record[k] = v
@@ -42,14 +48,12 @@ def run_task(dataset, num_agents):
         results = task.evaluation(df)
         print(results)
     if dataset == 'TRIVIA':
-        task = TRIVIA(num_agents=num_agents, model_type='OpenAI', temperature=1)
+        task = TRIVIA(ensemble_dict=ensemble_dict, temperature=1)
         data = task.get_question_data('data/triviaQA/qa/web-train.json')
         questions = []
         final_preds = []
         i = 0
-        for q in data[100:]:
-            if i == 1:
-                break
+        for q in data[:100]:
             try:
                 ensemble_answers = task.prompt_agents(q)
                 final_pred = task.get_majority_voting_answer(ensemble_answers)
@@ -59,7 +63,7 @@ def run_task(dataset, num_agents):
                 print("question ", i)
             except:
                 pass
-        #task.evaluate(questions, final_preds)
+        task.evaluate(questions, final_preds)
 
 if __name__ == "__main__":
     # Create the argument parser
@@ -67,11 +71,10 @@ if __name__ == "__main__":
     
     # Add arguments
     parser.add_argument("--dataset", type=str)
-    parser.add_argument("--num_agents", type=int)
 
     # Parse the command line arguments
     args = parser.parse_args()
 
 
     # Process the dataset with the specified number of agents
-    run_task(args.dataset, args.num_agents)
+    run_task(args.dataset)
