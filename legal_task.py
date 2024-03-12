@@ -23,9 +23,9 @@ from langchain_core.messages import HumanMessage, SystemMessage
 import pandas as pd
 
 class LEGAL():
-    def __init__(self, num_agents, model_type, temperature=1, task_name="abercrombie"):
+    def __init__(self, ensemble_dict, temperature=1, task_name="abercrombie"):
         self.task_name = task_name
-        self.ensemble = AgentEnsemble(num_agents, model_type, temperature)
+        self.ensemble = AgentEnsemble(ensemble_dict, temperature)
         self.labels = []
 
     def get_question_data(self, dataset_name):
