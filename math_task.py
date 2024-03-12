@@ -1,4 +1,4 @@
-from ensamble import AgentEnsamble
+from ensemble import AgentEnsemble
 from math_equivalance import is_equiv
 import utils
 
@@ -26,7 +26,8 @@ class MATH():
                     
                     solution = problem["solution"]
                     solution = self.math_ans_parser(solution)
-         
+                    p = problem['problem']
+                    print(f"problem: {p}, solution: {solution}\n")
                     
                     question_prompt = prompts["math"]["question"].format(problem["problem"])
                     question_data = {

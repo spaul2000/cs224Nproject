@@ -12,5 +12,5 @@ class AgentEnsemble:
     def spawn_agents(self):
         agents = []
         for _ in range(self.num_agents):
-            agents.append(Agent(self.api_key, 'OpenAI', self.model_type, self.temperature))
+            agents.append(Agent(self.api_key, 'Llama', self.model_type, self.temperature))
         return agents

@@ -1,8 +1,9 @@
-from ensemble import AgentEnsemble
+from ensemble2 import AgentEnsemble
 import json
 import csv
 import re
 import string
+from sacrebleu import sentence_bleu
 from prompts import prompts, TRIVIA_TASK_SYSTEM_PROMPT
 from langchain.prompts.chat import (
     ChatPromptTemplate,
@@ -13,7 +14,7 @@ import tiktoken
 
 class TRIVIA():
     def __init__(self, num_agents, model_type, api_key, temperature=1):
-        self.ensemble = AgentEnsemble(num_agents, model_type, api_key, temperature)
+        self.ensemble = AgentEnsemble(num_agents, api_key, temperature)
 
     def get_question_data(self, dataset_path):
         encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
@@ -24,8 +25,8 @@ class TRIVIA():
         data_set = json.load(open(dataset_path))["Data"]
         i = 0
         for data in data_set:    
-            if (i % 1000 == 0):
-                print('data: ', i)
+            # if (i % 1000 == 0):
+            #     print('data: ', i)
             
             question = data['Question']
             search_results = data['SearchResults'] # list of files
@@ -56,9 +57,8 @@ class TRIVIA():
                 "question_id": question_id
             }
             i += 1
-            print(i)
             qa_list.append(question_data)
-            if i == 200:
+            if i == 500:
                 break
         return qa_list
     
@@ -74,23 +74,29 @@ class TRIVIA():
             answer = agent.llm.invoke(prompt)
             answers.append(answer.content)
         return answers
-
-    # def trivia_ans_parser(self, answers):
-    #     # takes in list of answers to one question 
-    #     print(parsed_answers)
-    #     parsed_answers = []
-    #     for answer in answers:
-    #         parsed_answers.append(answer.content)
+    
 
     def get_majority_voting_answer(self, agent_answers):
-        # for one prompt
         if len(agent_answers) == 1:
+            # for one agent
             return agent_answers[0]
-        
+        # more than one agents
+        cmp_res = lambda x, y: sentence_bleu(x, [y], lowercase=True).score
+        bleu_scores = []
+        for idx, agent in enumerate(agent_answers):
+            total_score = 0
+            for idx_o, otheragent in enumerate(agent_answers):
+                if idx == idx_o:
+                    continue
+                total_score += cmp_res(self.normalize_answer(agent), self.normalize_answer(otheragent))
+            bleu_scores.append(total_score)
+        max_index = max(enumerate(bleu_scores), key=lambda x: x[1])[0]
+        return agent_answers[max_index]
+
+    
 
     def normalize_answer(self, s):
         """Lower text and remove punctuation, articles and extra whitespace."""
-
         def remove_articles(text):
             return re.sub(r'\b(a|an|the)\b', ' ', text)
 
@@ -109,33 +115,52 @@ class TRIVIA():
 
         return white_space_fix(remove_articles(handle_punc(lower(replace_underscore(s))))).strip()
 
-    def has_exact_match(self, ground_truths, candidates):
+
+    def has_exact_match(self, ground_truths, candidate):
+        print(ground_truths)
+        print(self.normalize_answer(candidate))
         for ground_truth in ground_truths:
-            if ground_truth in candidates:
+            if self.normalize_answer(ground_truth) in self.normalize_answer(candidate):
                 return True
         return False
+
+    def bleuscore_one_pred(self, possible_answers, pred):
+        cmp_res = lambda x, y: sentence_bleu(x, [y], lowercase=True).score
+        bleu_scores = []
+        for poss_ans in possible_answers:
+            score = cmp_res(self.normalize_answer(poss_ans), self.normalize_answer(pred))
+            bleu_scores.append(score)
+        return bleu_scores
+
 
 
     def evaluate(self, questions, answers):
         num_correct = 0
-        df = open("trivia_one_agent.csv", 'w', newline='')
-        fieldnames = ["question_ids", "possible_answers", "predicted_answer", "normalized_answer", "correct"]
+        df = open("trivia_twenty_llama.csv", 'w', newline='')
+        fieldnames = ["question_ids", "possible_answers", "predicted_answer", "normalized_answer", "correct", "bleu_scores"]
         writer = csv.DictWriter(df, fieldnames=fieldnames)
         for i in range(len(questions)):
-            row = {}
+            
             question = questions[i]
             possible_answers = [question["answer"], question["normalized_answer"]] + question["aliases"] + question["normalized_aliases"]
-            row["question_ids"] = question["question_id"]
-            row["possible_answers"] = possible_answers
-            row["predicted_answer"] = answers[i]
-            row["correct"] = "False"
             normalized_ans = self.normalize_answer(answers[i])
-            row["normalized_answer"] = normalized_ans
-            
+            row = {
+                "question_ids": question["question_id"],
+                "possible_answers": possible_answers,
+                "predicted_answer": answers[i],
+                "correct": "False",
+                "normalized_answer": normalized_ans,
+                "bleu_scores": []
+            }
             if normalized_ans in possible_answers or self.has_exact_match(possible_answers, normalized_ans):
                 num_correct += 1
                 row["correct"] = "True"
+            else:
+                row["bleu_scores"] = self.bleuscore_one_pred(possible_answers, normalized_ans)
+
             writer.writerow(row)
         #df.to_csv("trivia_one_agent.csv")
         print("Accuracy: ", num_correct/len(questions))
         return
+    
+

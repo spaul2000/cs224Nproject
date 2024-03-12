@@ -11,6 +11,7 @@ class Agent:
         if provider == "OpenAI":
             self.llm = ChatOpenAI(temperature=temperature, model="gpt-3.5-turbo")
         elif provider == "Llama":
+            print('llama')
             llama = LlamaAPI(os.environ['LLAMA_API_TOKEN'])
             self.llm = ChatLlamaAPI(client=llama, temperature=temperature)
         elif provider == "google":
