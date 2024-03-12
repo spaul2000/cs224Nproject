@@ -1,6 +1,7 @@
 import argparse
 from math_task import MATH
 from trivia_task import TRIVIA
+from legal_task import LEGAL
 import pandas as pd
 import os 
 
@@ -9,10 +10,15 @@ os.environ['GOOGLE_API_KEY'] = 'AIzaSyAy9PG3kVjWnBtgbDROGtRqYUh1zxm7-RU'
 os.environ['OPENAI_API_KEY'] = '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'
 
 def run_task(dataset, num_agents):
-    if dataset == 'MATH':
-        task = MATH(num_agents=num_agents, model_type='google', temperature=1)
+    if dataset == 'MATH' or dataset == "LEGAL":
+        if dataset == 'MATH':
+            task = MATH(num_agents=num_agents, model_type='google', temperature=1)
+            data = task.get_question_data('data/math_subset_20.json')
+        if dataset == 'LEGAL':
+            task = LEGAL(num_agents=num_agents, model_type='OpenAI', temperature=1)
+            data = task.get_question_data('abercrombie')
     
-        data = task.get_question_data('data/math_subset_20.json')
+        
         total_record = []
 
         for i, d in enumerate(data):

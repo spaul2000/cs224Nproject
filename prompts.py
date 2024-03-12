@@ -2,6 +2,8 @@ MATH_TASK_SYSTEM_PROMPT = "Imagine you are an expert skilled in solving mathemat
 
 TRIVIA_TASK_SYSTEM_PROMPT = "Imagine you are an expert skilled in reading comprehension and are confident in your answer and often persuades other agents to believe in you. Please keep this in mind."
 
+LEGAL_TASK_SYSTEM_PROMPT = "Imagine you are an expert skilled in legal matters and are confident in your answer and often persuades other agents to believe in you. Please keep this in mind."
+
 prompts = {
     
     "math":{
