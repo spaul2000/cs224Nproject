@@ -11,15 +11,19 @@ os.environ['OPENAI_API_KEY'] = 'sk-x4EL56mlixxnodX55yC8T3BlbkFJtRGwObFLcOMZAaZot
 
 
 ENSEMBLE = {
-    'OpenAI': 0,
-    'Llama': 0,
+    'OpenAI': 1,
+    'Llama': 1,
     'google': 1
 } #options: OpenAI, Llama, google
 
 def run_task(dataset, ensemble_dict=ENSEMBLE):
-    if dataset == 'MATH':
-        task = MATH(ensemble_dict=ensemble_dict, temperature=1)
-        data = task.get_question_data('data/math_subset_20.json')
+    if dataset == 'MATH' or 'LEGAL':
+        if dataset == 'MATH':
+            task = MATH(ensemble_dict=ensemble_dict, temperature=1)
+            data = task.get_question_data('data/math_subset_20.json')
+        elif dataset == 'LEGAL':
+            task = LEGAL(ensemble_dict=ensemble_dict, temperature=1)
+            data = task.get_question_data('abercrombie')
 
     
         
