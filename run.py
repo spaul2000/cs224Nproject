@@ -6,10 +6,11 @@ import os
 
 os.environ['LLAMA_API_TOKEN'] = 'LL-S38sNFyBFJMraCD4N5llAbj6hCBLutze0DD24KNGCSWkdRTz5izQJIk57tFbRDLd'
 os.environ['GOOGLE_API_KEY'] = 'AIzaSyAy9PG3kVjWnBtgbDROGtRqYUh1zxm7-RU'
+os.environ['OPENAI_API_KEY'] = ''
 
 def run_task(dataset, num_agents):
     if dataset == 'MATH':
-        task = MATH(num_agents=num_agents, model_type='google', temperature=1)
+        task = MATH(num_agents=num_agents, model_type='Llama', temperature=1)
     
     data = task.get_question_data('data/math_subset_20.json')
     total_record = []
