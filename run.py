@@ -1,12 +1,14 @@
 import argparse
 from math_task import MATH
 from trivia_task import TRIVIA
+from legal_task import LEGAL
 import pandas as pd
 import os 
 
 os.environ['LLAMA_API_TOKEN'] = 'LL-S38sNFyBFJMraCD4N5llAbj6hCBLutze0DD24KNGCSWkdRTz5izQJIk57tFbRDLd'
 os.environ['GOOGLE_API_KEY'] = 'AIzaSyAy9PG3kVjWnBtgbDROGtRqYUh1zxm7-RU'
 os.environ['OPENAI_API_KEY'] = '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'
+
 
 ENSEMBLE = {
     'OpenAI': 0,
@@ -17,8 +19,10 @@ ENSEMBLE = {
 def run_task(dataset, ensemble_dict=ENSEMBLE):
     if dataset == 'MATH':
         task = MATH(ensemble_dict=ensemble_dict, temperature=1)
-    
         data = task.get_question_data('data/math_subset_20.json')
+
+    
+        
         total_record = []
 
         for i, d in enumerate(data):
