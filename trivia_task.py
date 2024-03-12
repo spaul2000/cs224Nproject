@@ -13,8 +13,8 @@ from langchain.prompts.chat import (
 import tiktoken
 
 class TRIVIA():
-    def __init__(self, num_agents, model_type, temperature=1):
-        self.ensemble = AgentEnsemble(num_agents, model_type, temperature)
+    def __init__(self, ensemble_dict, temperature=1):
+        self.ensemble = AgentEnsemble(ensemble_dict, temperature)
 
     def get_question_data(self, dataset_path):
         encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
@@ -136,7 +136,7 @@ class TRIVIA():
 
     def evaluate(self, questions, answers):
         num_correct = 0
-        df = open("trivia_twenty_llama.csv", 'w', newline='')
+        df = open("trivia_one_google.csv", 'w', newline='')
         fieldnames = ["question_ids", "possible_answers", "predicted_answer", "normalized_answer", "correct", "bleu_scores"]
         writer = csv.DictWriter(df, fieldnames=fieldnames)
         for i in range(len(questions)):
