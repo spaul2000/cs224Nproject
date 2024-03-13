@@ -12,8 +12,8 @@ os.environ['OPENAI_API_KEY'] = 'sk-x4EL56mlixxnodX55yC8T3BlbkFJtRGwObFLcOMZAaZot
 
 ENSEMBLE = {
     'OpenAI': 0,
-    'Llama': 0,
-    'google': 1
+    'Llama': 4,
+    'google': 4
 } #options: OpenAI, Llama, google
 
 def run_task(dataset, ensemble_dict=ENSEMBLE):
