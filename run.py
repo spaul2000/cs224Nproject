@@ -5,6 +5,8 @@ from legal_task import LEGAL
 import pandas as pd
 import os 
 
+from metrics import calculate_metrics
+
 os.environ['LLAMA_API_TOKEN'] = 'LL-S38sNFyBFJMraCD4N5llAbj6hCBLutze0DD24KNGCSWkdRTz5izQJIk57tFbRDLd'
 os.environ['GOOGLE_API_KEY'] = 'AIzaSyAy9PG3kVjWnBtgbDROGtRqYUh1zxm7-RU'
 os.environ['OPENAI_API_KEY'] = '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'
@@ -29,7 +31,7 @@ def run_task(dataset, ensemble_dict=ENSEMBLE):
         
         total_record = []
 
-        for i, d in enumerate(data):
+        for i, d in enumerate(data[:5]):
             print(i)
             ensemble_answers= task.prompt_agents(d)
             final_answer = task.get_majority_voting_answer(ensemble_answers)
@@ -52,6 +54,9 @@ def run_task(dataset, ensemble_dict=ENSEMBLE):
             print(f"iteration: {i} final_res: {final_answer}, ground_truth: {ground_truth}, perf: {perf}\n")
             print("************************\n")
         df = pd.DataFrame(total_record)
+
+        calculate_metrics(df, len(task.ensemble.agents))
+
         df.to_csv('test.csv', index=False)
         results = task.evaluation(df)
         print(results)
