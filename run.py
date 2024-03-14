@@ -10,12 +10,13 @@ from metrics import calculate_metrics
 os.environ['LLAMA_API_TOKEN'] = 'LL-S38sNFyBFJMraCD4N5llAbj6hCBLutze0DD24KNGCSWkdRTz5izQJIk57tFbRDLd'
 os.environ['GOOGLE_API_KEY'] = 'AIzaSyAy9PG3kVjWnBtgbDROGtRqYUh1zxm7-RU'
 os.environ['OPENAI_API_KEY'] = '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'
-# os.environ["ANTHROPIC_API_KEY"] = 
+os.environ['ANTHROPIC_API_KEY'] = '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'
 
 ENSEMBLE = {
-    'OpenAI': 1,
-    'Llama': 1,
-    'google': 1
+    'OpenAI': 0,
+    'Llama': 0,
+    'google': 0,
+    'anthropic': 1
 } #options: OpenAI, Llama, google
 
 def run_task(dataset, ensemble_dict=ENSEMBLE):
