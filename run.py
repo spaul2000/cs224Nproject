@@ -10,7 +10,7 @@ from metrics import calculate_metrics
 os.environ['LLAMA_API_TOKEN'] = 'LL-S38sNFyBFJMraCD4N5llAbj6hCBLutze0DD24KNGCSWkdRTz5izQJIk57tFbRDLd'
 os.environ['GOOGLE_API_KEY'] = 'AIzaSyAy9PG3kVjWnBtgbDROGtRqYUh1zxm7-RU'
 os.environ['OPENAI_API_KEY'] = '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'
-
+# os.environ["ANTHROPIC_API_KEY"] = 
 
 ENSEMBLE = {
     'OpenAI': 1,
@@ -31,7 +31,7 @@ def run_task(dataset, ensemble_dict=ENSEMBLE):
         
         total_record = []
 
-        for i, d in enumerate(data[:5]):
+        for i, d in enumerate(data):
             print(i)
             ensemble_answers= task.prompt_agents(d)
             final_answer = task.get_majority_voting_answer(ensemble_answers)
