@@ -23,9 +23,9 @@ from langchain_core.messages import HumanMessage, SystemMessage
 import pandas as pd
 
 class LEGAL():
-    def __init__(self, num_agents, model_type, temperature=1, task_name="abercrombie"):
+    def __init__(self, ensemble_dict, temperature=1, task_name="abercrombie"):
         self.task_name = task_name
-        self.ensemble = AgentEnsemble(num_agents, model_type, temperature)
+        self.ensemble = AgentEnsemble(ensemble_dict, temperature)
         self.labels = []
 
     def get_question_data(self, dataset_name):
@@ -128,13 +128,13 @@ class LEGAL():
             # print(answer)
 
        
-        print("PRE-PARSED ANSWERS")
-        print(answers)
+        # print("PRE-PARSED ANSWERS")
+        # print(answers)
 
         answers = self.parse_answer(answers)
         
-        print("ANSWERS")
-        print(answers)
+        # print("ANSWERS")
+        # print(answers)
 
         return answers
 
@@ -143,8 +143,15 @@ class LEGAL():
         # return evaluation.evaluation(df)
         generations = df["final_answer"].to_list()
         ground_truth = df["ground_truth"].to_list()
+
+        # print("GENERATIONS")
+        # print(generations)
+        # print("GROUND TRUTH")
+        # print(ground_truth)
+
         return legalbench_evaluation.evaluate(self.task_name, generations, ground_truth)
         # return df.apply(utils.is_final_answer_correct, axis=1).mean()
+
     
 
 def main():
