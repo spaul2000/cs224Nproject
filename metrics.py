@@ -24,7 +24,10 @@ def calculate_metrics(df, num_agents):
     all_agree = df[ensemble_columns].apply(lambda x: x.nunique() == 1, axis=1)
 
     # Percent of time all agents disagree
-    all_disagree = df[ensemble_columns].apply(lambda x: x.nunique == num_agents, axis=1)
+    all_disagree = df[ensemble_columns].apply(lambda x: x.nunique() == num_agents, axis=1)
+
+    # Overall Accuracy
+    overall_accuracy = (df['final_answer'] == ground_truth).mean()
 
     print("% of time all agent answers are correct for a given question: ", all_correct.mean())
     print("% of time all agent answers are incorrect for a given question: ", all_incorrect.mean())
@@ -33,3 +36,4 @@ def calculate_metrics(df, num_agents):
     print("% of time at least one agent is correct but the final answer is incorrect for a given question: ", one_correct_final_incorrect.mean())
     print("% of time all of the agents agree: ", all_agree.mean())
     print("% of time all agents disagree: ", all_disagree.mean())
+    print("Overall Accuracy: ", overall_accuracy)
