@@ -1,4 +1,4 @@
-from agent import Agent
+from llm.agent import Agent
 
 class AgentEnsemble:
     def __init__(self, ensemble_dict, temperature=1):

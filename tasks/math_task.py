@@ -1,9 +1,9 @@
-from ensemble import AgentEnsemble
-from math_equivalance import is_equiv
-import utils
+from llm.ensemble import AgentEnsemble
+from utils.math_equivalance import is_equiv
+import utils.utils as utils
 
 import json
-from prompts import prompts, MATH_TASK_SYSTEM_PROMPT
+from utils.prompts import prompts, MATH_TASK_SYSTEM_PROMPT
 import re
 from langchain.prompts.chat import (
     ChatPromptTemplate,
@@ -86,7 +86,8 @@ class MATH():
             try:
                 answer = agent.llm(messages).content
                 answer = self.math_ans_parser(answer)
-            except:
+            except Exception as e:
+                print(e)
                 answer = -1
             answers.append(answer)
         

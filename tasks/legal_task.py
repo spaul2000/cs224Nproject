@@ -2,15 +2,15 @@ import datasets
 import requests
 
 # from ensemble import AgentEnsemble
-from ensemble import AgentEnsemble
+from llm.ensemble import AgentEnsemble
 from LegalBench import evaluation as legalbench_evaluation
 
 from LegalBench.tasks import TASKS, ISSUE_TASKS
 from LegalBench.utils import generate_prompts
 
-import utils
+import utils.utils as utils
 
-from prompts import prompts, LEGAL_TASK_SYSTEM_PROMPT
+from utils.prompts import prompts, LEGAL_TASK_SYSTEM_PROMPT
 
 from langchain.prompts.chat import (
     ChatPromptTemplate,

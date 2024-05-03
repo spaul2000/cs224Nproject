@@ -1,21 +1,18 @@
 import argparse
-from math_task import MATH
-from trivia_task import TRIVIA
-from legal_task import LEGAL
+from tasks.math_task import MATH
+from tasks.trivia_task import TRIVIA
+from tasks.legal_task import LEGAL
 import pandas as pd
 import os 
 
-from metrics import calculate_metrics
+from utils.metrics import calculate_metrics
 
-os.environ['LLAMA_API_TOKEN'] = 'LL-S38sNFyBFJMraCD4N5llAbj6hCBLutze0DD24KNGCSWkdRTz5izQJIk57tFbRDLd'
-os.environ['GOOGLE_API_KEY'] = 'AIzaSyAy9PG3kVjWnBtgbDROGtRqYUh1zxm7-RU'
-os.environ['OPENAI_API_KEY'] = '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'
-os.environ['ANTHROPIC_API_KEY'] = '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'
 
 ENSEMBLE = {
-    'OpenAI': 0,
-    'Llama': 0,
-    'google': 1
+    'OpenAI': 4,
+    'Llama': 4,
+    'google': 4,
+    'anthropic': 0
 } #options: OpenAI, Llama, google
 
 def run_task(dataset, ensemble_dict=ENSEMBLE):
@@ -32,7 +29,6 @@ def run_task(dataset, ensemble_dict=ENSEMBLE):
         total_record = []
 
         for i, d in enumerate(data):
-            print(i)
             ensemble_answers= task.prompt_agents(d)
             final_answer = task.get_majority_voting_answer(ensemble_answers)
             result_dict = {"ensemble_answers": ensemble_answers, 'final_answer':final_answer}
@@ -51,8 +47,8 @@ def run_task(dataset, ensemble_dict=ENSEMBLE):
             perf = task.evaluation(tmp_df)
             final_answer = result_dict["final_answer"]
             ground_truth = d["ground_truth"]
-            print(f"iteration: {i} final_res: {final_answer}, ground_truth: {ground_truth}, perf: {perf}\n")
-            print("************************\n")
+            # print(f"iteration: {i} final_res: {final_answer}, ground_truth: {ground_truth}, perf: {perf}\n")
+            # print("************************\n")
         df = pd.DataFrame(total_record)
 
         calculate_metrics(df, len(task.ensemble.agents))

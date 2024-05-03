@@ -1,10 +1,10 @@
-from ensemble import AgentEnsemble
+from llm.ensemble import AgentEnsemble
 import json
 import csv
 import re
 import string
 from sacrebleu import sentence_bleu
-from prompts import prompts, TRIVIA_TASK_SYSTEM_PROMPT
+from utils.prompts import prompts, TRIVIA_TASK_SYSTEM_PROMPT
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
